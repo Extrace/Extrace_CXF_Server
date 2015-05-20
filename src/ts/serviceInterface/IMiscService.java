@@ -12,6 +12,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.codehaus.jettison.json.JSONException;
+
 import ts.model.CodeNamePair;
 import ts.model.Customer;
 import ts.model.Region;
@@ -168,12 +170,13 @@ public interface IMiscService {
 	 * @param uname
 	 * @param pwd
 	 * @return
+	 * @throws JSONException
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("/doLogin")
-	public boolean doLogin(@QueryParam("uname") String uname,
-			@QueryParam("pwd") String pwd);
+	public String doLogin(@QueryParam("uname") String uname,
+			@QueryParam("pwd") String pwd) throws JSONException;
 
 	/**
 	 * 登出

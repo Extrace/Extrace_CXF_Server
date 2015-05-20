@@ -106,6 +106,7 @@
 				<property name="transNodeDao" ref="transNodeDao"></property>	
 				<property name="regionDao" ref="regionDao"></property>
 				<property name="customerDao" ref="customerDao"></property>
+				<property name="userDao" ref="userDao"></property>
 			</bean>
 			<bean class="ts.serviceImpl.DomainService">
 			    <!-- 配置DomainService中的属性dao -->

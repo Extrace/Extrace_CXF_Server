@@ -15,9 +15,11 @@ public class UserDao extends BaseDao<User, Integer> {
 	 */
 	public boolean checkLogin(String uname, String pwd) {
 
-		List<User> user = findBy("uname", uname, uname, true);
+		System.out.println("uname" + uname);
+		List<User> user = findBy("uname", uname, "uname", true);
 		User getUser = user.get(0);
-		if (pwd == getUser.getPassword()) {
+		System.out.println(getUser.toString());
+		if (pwd.equals(getUser.getPassword())) {
 			return true;
 		} else {
 			return false;

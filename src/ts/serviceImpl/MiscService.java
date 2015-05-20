@@ -5,9 +5,13 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
 import ts.daoImpl.CustomerDao;
 import ts.daoImpl.RegionDao;
 import ts.daoImpl.TransNodeDao;
+import ts.daoImpl.UserDao;
 import ts.model.CodeNamePair;
 import ts.model.Customer;
 import ts.model.Region;
@@ -20,6 +24,7 @@ public class MiscService implements IMiscService {
 	private TransNodeDao transNodeDao;
 	private RegionDao regionDao;
 	private CustomerDao customerDao;
+	private UserDao userDao;
 
 	public TransNodeDao getTransNodeDao() {
 		return transNodeDao;
@@ -43,6 +48,14 @@ public class MiscService implements IMiscService {
 
 	public void setCustomerDao(CustomerDao dao) {
 		this.customerDao = dao;
+	}
+
+	public UserDao getUserDao() {
+		return userDao;
+	}
+
+	public void setUserDao(UserDao dao) {
+		this.userDao = dao;
 	}
 
 	public MiscService() {
@@ -160,9 +173,19 @@ public class MiscService implements IMiscService {
 	}
 
 	@Override
-	public boolean doLogin(String uname, String pwd) {
+	public String doLogin(String uname, String pwd) throws JSONException {
 		// TODO Auto-generated method stub
-
-		return false;
+		JSONObject obj = new JSONObject();
+		if (userDao.checkLogin(uname, pwd)) {
+			try {
+				obj.put("username", uname);
+				obj.put("status", true);
+			} catch (JSONException e) {
+			}
+		} else {
+			obj.put("error_msg", "用户名或密码错误");
+			obj.put("status", false);
+		}
+		return obj.toString();
 	}
 }

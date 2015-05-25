@@ -56,7 +56,7 @@ public class RegionDao extends BaseDao<Region, String> {
 	 * 获取省
 	 */
 	public List<Region> getProvinceList() {
-		List<Region> listrg = findBy("stage", 1, "regionCode", true);
+		List<Region> listrg = findBy("stage", 1, "regioncode", true);
 		return listrg;
 	}
 
@@ -65,8 +65,8 @@ public class RegionDao extends BaseDao<Region, String> {
 	 */
 	public List<Region> getCityList(String ID) {
 		String sid = ID.substring(0, 2).concat("%");
-		List<Region> listrg = findBy("regionCode", true,
-				Restrictions.like("regionCode", sid),
+		List<Region> listrg = findBy("regioncode", true,
+				Restrictions.like("regioncode", sid),
 				Restrictions.eq("stage", 2));
 		return listrg;
 	}
@@ -76,8 +76,8 @@ public class RegionDao extends BaseDao<Region, String> {
 	 */
 	public List<Region> getTownList(String ID) {
 		String sid = ID.substring(0, 4).concat("%");
-		List<Region> listrg = findBy("regionCode", true,
-				Restrictions.like("regionCode", sid),
+		List<Region> listrg = findBy("regioncode", true,
+				Restrictions.like("regioncode", sid),
 				Restrictions.eq("stage", 3));
 		return listrg;
 	}

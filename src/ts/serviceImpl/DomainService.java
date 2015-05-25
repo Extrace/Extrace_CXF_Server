@@ -16,6 +16,7 @@ import ts.daoImpl.UserDao;
 import ts.model.DistributeCenter;
 import ts.model.ExpressSheet;
 import ts.model.Package;
+import ts.model.User;
 import ts.serviceInterface.IDomainService;
 
 public class DomainService implements IDomainService {
@@ -92,12 +93,15 @@ public class DomainService implements IDomainService {
 	@Override
 	public Response getExpressSheet(String id) {
 		ExpressSheet es = expressSheetDao.get(id);
+		System.out.println(es.toString());
 		return Response.ok(es).header("EntityClass", "ExpressSheet").build();
 	}
 
 	@Override
 	public Response newExpressSheet(String id, int uid) {
 		// 产生一个不带毫秒的时间,不然,SQL时间和JAVA时间格式不一致
+		System.out.println("***start new exp****\n" + "expid: " + id + " uid:"
+				+ uid);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		Date tm = new Date();
 		try {
@@ -121,7 +125,12 @@ public class DomainService implements IDomainService {
 					.build(); // 已经存在
 		}
 		try {
-			String pkgId = userDao.get(uid).getReceivepid();
+			System.out.println("***start try****");
+			// String pkgId = userDao.get(uid).getReceivepid();
+			User user = userDao.get(uid);
+			System.out.println("***start try****" + user.toString());
+			String pkgId = user.getReceivepid();
+			System.out.println("***start try****" + pkgId);
 			ExpressSheet nes = new ExpressSheet();
 			nes.setId(id);
 			nes.setExpresstype(0);
@@ -136,6 +145,7 @@ public class DomainService implements IDomainService {
 			return Response.ok(nes).header("EntityClass", "ExpressSheet")
 					.build();
 		} catch (Exception e) {
+			System.out.println("***try error****");
 			return Response.serverError().entity(e.getMessage()).build();
 		}
 	}

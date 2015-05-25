@@ -27,10 +27,15 @@ public class CustomerDao extends BaseDao<Customer, Integer> {
 	}
 
 	public List<Customer> findByName(String name) {
-		return findLike("name", name + "%", "telCode", true);
+		return findLike("cname", name + "%", "telcode", true);
 	}
 
 	public List<Customer> findByTelCode(String telCode) {
-		return findBy("telCode", telCode, "telCode", true);
+		return findBy("telcode", telCode, "telcode", true);
+	}
+
+	public List<Customer> findAllCustomer(String orderby, boolean isAsc) {
+		System.out.println("***start find all cutomers****");
+		return getAll(orderby, isAsc);
 	}
 }

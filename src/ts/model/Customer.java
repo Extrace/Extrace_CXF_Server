@@ -47,20 +47,6 @@ public class Customer implements Serializable {
 	@Column(name = "poscode", nullable = false, length = 10)
 	private int poscode;
 
-	// @OneToMany(mappedBy="sender", targetEntity=ExpreesSheet.class)
-	// @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-	// org.hibernate.annotations.CascadeType.LOCK})
-	// @org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)
-	// private java.util.Set<ExpreesSheet> expreesSender = new
-	// java.util.HashSet<ExpreesSheet>();
-	//
-	// @OneToMany(mappedBy="recever", targetEntity=ExpreesSheet.class)
-	// @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-	// org.hibernate.annotations.CascadeType.LOCK})
-	// @org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)
-	// private java.util.Set<ExpreesSheet> expreesReceiver = new
-	// java.util.HashSet<ExpreesSheet>();
-
 	public int getId() {
 		return id;
 	}
@@ -93,6 +79,14 @@ public class Customer implements Serializable {
 		this.regioncode = regioncode;
 	}
 
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
 	public int getPoscode() {
 		return poscode;
 	}
@@ -108,23 +102,6 @@ public class Customer implements Serializable {
 	public String getAddress() {
 		return address;
 	}
-
-	// public void setExpreesSender(java.util.Set<ExpreesSheet> value) {
-	// this.expreesSender = value;
-	// }
-	//
-	// public java.util.Set<ExpreesSheet> getExpreesSender() {
-	// return expreesSender;
-	// }
-	//
-	//
-	// public void setExpreesReceiver(java.util.Set<ExpreesSheet> value) {
-	// this.expreesReceiver = value;
-	// }
-	//
-	// public java.util.Set<ExpreesSheet> getExpreesReceiver() {
-	// return expreesReceiver;
-	// }
 
 	@Override
 	public String toString() {
@@ -144,16 +121,9 @@ public class Customer implements Serializable {
 			sb.append("RegionCode=").append(getRegioncode()).append(" ");
 			sb.append("Address=").append(getAddress()).append(" ");
 			sb.append("PosCode=").append(getPoscode()).append(" ");
-			// sb.append("ExpreesSender.size=").append(getExpreesSender().size()).append(" ");
-			// sb.append("ExpreesReceiver.size=").append(getExpreesReceiver().size()).append(" ");
 			sb.append("]");
 			return sb.toString();
 		}
-	}
-
-	private Object getDepartment() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Transient

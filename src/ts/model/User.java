@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "user")
-@XmlRootElement(name = "user")
+@XmlRootElement(name = "User")
 public class User implements Serializable {
 	/**
 	 * 
@@ -55,85 +55,6 @@ public class User implements Serializable {
 	@Column(name = "transpid", nullable = true, length = 24)
 	private String transpid;
 
-	// private void setUID(int value) {
-	// this.UID = value;
-	// }
-	//
-	// public int getUID() {
-	// return UID;
-	// }
-	// public void setPWD(String value) {
-	// this.PWD = value;
-	// }
-	//
-	// public String getPWD() {
-	// return PWD;
-	// }
-	//
-	// public void setName(String value) {
-	// this.name = value;
-	// }
-	//
-	// public String getName() {
-	// return name;
-	// }
-	//
-	// public void setURull(int value) {
-	// this.URull = value;
-	// }
-	//
-	// public int getURull() {
-	// return URull;
-	// }
-	//
-	// public void setTelCode(String value) {
-	// this.telCode = value;
-	// }
-	//
-	// public String getTelCode() {
-	// return telCode;
-	// }
-	//
-	// public void setStatus(int value) {
-	// this.status = value;
-	// }
-	//
-	// public int getStatus() {
-	// return status;
-	// }
-	//
-	// public void setDptID(String value) {
-	// this.dptID = value;
-	// }
-	//
-	// public String getDptID() {
-	// return dptID;
-	// }
-	//
-	// public void setReceivePackageID(String value) {
-	// this.receivePackageID = value;
-	// }
-	//
-	// public String getReceivePackageID() {
-	// return receivePackageID;
-	// }
-	//
-	// public void setDelivePackageID(String value) {
-	// this.delivePackageID = value;
-	// }
-	//
-	// public String getDelivePackageID() {
-	// return delivePackageID;
-	// }
-	//
-	// public void setTransPackageID(String value) {
-	// this.transPackageID = value;
-	// }
-	//
-	// public String geTransPackageID() {
-	// return transPackageID;
-	// }
-
 	public int getORMID() {
 		return getId();
 	}
@@ -142,8 +63,7 @@ public class User implements Serializable {
 		return id;
 	}
 
-	@SuppressWarnings("unused")
-	private void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

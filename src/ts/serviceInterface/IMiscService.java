@@ -22,6 +22,11 @@ import ts.model.TransNode;
 @Path("/Misc")
 public interface IMiscService {
 
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/getUser")
+	public Response getUser(@QueryParam("uname") String uname);
+
 	/**
 	 * 获取转运结点ById
 	 * 
@@ -82,6 +87,14 @@ public interface IMiscService {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("/getCustomerInfo/{id}")
 	public Response getCustomerInfo(@PathParam("id") String id);
+
+	/**
+	 * 获取所有客户列表
+	 */
+	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/getCustomerList")
+	public List<Customer> getAllCustomer();
 
 	/**
 	 * 删除客户信息ById

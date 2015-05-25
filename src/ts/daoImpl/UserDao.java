@@ -25,4 +25,16 @@ public class UserDao extends BaseDao<User, Integer> {
 			return false;
 		}
 	}
+
+	/**
+	 * 获取User
+	 * 
+	 * @param uname
+	 * @return
+	 */
+	public User get(String uname) {
+		List<User> user = findBy("uname", uname, "uname", true);
+		User getUser = user.get(0);
+		return getUser;
+	}
 }

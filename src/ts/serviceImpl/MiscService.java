@@ -16,6 +16,7 @@ import ts.model.CodeNamePair;
 import ts.model.Customer;
 import ts.model.Region;
 import ts.model.TransNode;
+import ts.model.User;
 import ts.serviceInterface.IMiscService;
 
 public class MiscService implements IMiscService {
@@ -90,13 +91,13 @@ public class MiscService implements IMiscService {
 	@Override
 	public Response getCustomerInfo(String id) {
 		Customer cstm = customerDao.get(Integer.parseInt(id));
-		return Response.ok(cstm).header("EntityClass", "CustomerInfo").build();
+		return Response.ok(cstm).header("EntityClass", "Customer").build();
 	}
 
 	@Override
 	public Response deleteCustomerInfo(int id) {
 		customerDao.removeById(id);
-		return Response.ok("Deleted").header("EntityClass", "D_CustomerInfo")
+		return Response.ok("Deleted").header("EntityClass", "D_Customer")
 				.build();
 	}
 
@@ -104,8 +105,7 @@ public class MiscService implements IMiscService {
 	public Response saveCustomerInfo(Customer obj) {
 		try {
 			customerDao.save(obj);
-			return Response.ok(obj).header("EntityClass", "R_CustomerInfo")
-					.build();
+			return Response.ok(obj).header("EntityClass", "R_Customer").build();
 		} catch (Exception e) {
 			return Response.serverError().entity(e.getMessage()).build();
 		}
@@ -187,5 +187,18 @@ public class MiscService implements IMiscService {
 			obj.put("status", false);
 		}
 		return obj.toString();
+	}
+
+	@Override
+	public Response getUser(String uname) {
+		System.out.println("*****start getUser****");
+		User user = userDao.get(uname);
+		System.out.println(user.toString());
+		return Response.ok(user).header("EntityClass", "User").build();
+	}
+
+	@Override
+	public List<Customer> getAllCustomer() {
+		return customerDao.findAllCustomer("id", true);
 	}
 }

@@ -1,42 +1,42 @@
 
-/*extraceÊı¾İ¿â½¨Á¢ÒÔ¼°Êı¾İµ¼Èë·½·¨*/
+/*extraceæ•°æ®åº“å»ºç«‹ä»¥åŠæ•°æ®å¯¼å…¥æ–¹æ³•*/
 
 
-//É¾³ıÒÑÓĞÊı¾İ¿â
+//åˆ é™¤å·²æœ‰æ•°æ®åº“
 DROP DATABASE extrace; 
 
-//´´½¨Êı¾İ¿â
+//åˆ›å»ºæ•°æ®åº“
 CREATE DATABASE extrace DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci; 
 
-//Ê¹ÓÃÊı¾İ¿â
+//ä½¿ç”¨æ•°æ®åº“
 use extrace; 
 
-//½«sqlÎÄ¼şµ¼Èë
+//å°†sqlæ–‡ä»¶å¯¼å…¥
 source G:/ExtraceData/Extrace.sql;
 
-//½«regionĞÅÏ¢µ¼Èëregion±íÖĞ
+//å°†regionä¿¡æ¯å¯¼å…¥regionè¡¨ä¸­
 load data local infile "G:/ExtraceData/region.txt" into table region fields terminated by ','  lines terminated by '\n' (regioncode,province,city,town,stage);  
 
-/*ÒÔÏÂÃüÁî£¬Èç¹ûÔÚcmdÖĞÊ¹ÓÃmysql£¬sqlÓï¾ä°üº¬ÖĞÎÄ¿ÉÄÜÎŞ·¨µ¼Èë£¬
-¿ÉÒÔÊ¹ÓÃnavicatµÄÃüÁîĞĞ½çÃæµ¼Èë*/
+/*ä»¥ä¸‹å‘½ä»¤ï¼Œå¦‚æœåœ¨cmdä¸­ä½¿ç”¨mysqlï¼Œsqlè¯­å¥åŒ…å«ä¸­æ–‡å¯èƒ½æ— æ³•å¯¼å…¥ï¼Œ
+å¯ä»¥ä½¿ç”¨navicatçš„å‘½ä»¤è¡Œç•Œé¢å¯¼å…¥*/
 
-//µ¼Èëºó·¢ÏÖ±±¾©ÊĞÓÊÕş±àÂë²»ÕıÈ·£¬ÓÃÏÂÃæÓï¾ä¸üĞÂregioncode
-update region set regioncode='110000' where province='±±¾©ÊĞ'; 
+//å¯¼å…¥åå‘ç°åŒ—äº¬å¸‚é‚®æ”¿ç¼–ç ä¸æ­£ç¡®ï¼Œç”¨ä¸‹é¢è¯­å¥æ›´æ–°regioncode
+update region set regioncode='110000' where province='åŒ—äº¬å¸‚'; 
 
-//½¨Á¢×ªÔËÍøµã±íĞÅÏ¢
-//½âÊÍÒ»ÏÂ£ºCONCAT()ÊÇmysqlµÄ×Ö·û´®Á´½Óº¯Êı£¬Ïàµ±ÓÚËµ£¬transnodeµÄid¾ÍÊÇregion±íµÄregioncode+00
-insert into transnode(id,nodename,nodetype,regioncode,poscode,telcode) select CONCAT(regioncode,'00'),CONCAT(town,'Íøµã'),0,regioncode,0,CONCAT('18601',regioncode) from region where stage=3; 
+//å»ºç«‹è½¬è¿ç½‘ç‚¹è¡¨ä¿¡æ¯
+//è§£é‡Šä¸€ä¸‹ï¼šCONCAT()æ˜¯mysqlçš„å­—ç¬¦ä¸²é“¾æ¥å‡½æ•°ï¼Œç›¸å½“äºè¯´ï¼Œtransnodeçš„idå°±æ˜¯regionè¡¨çš„regioncode+00
+insert into transnode(id,nodename,nodetype,regioncode,poscode,telcode) select CONCAT(regioncode,'00'),CONCAT(town,'ç½‘ç‚¹'),0,regioncode,0,CONCAT('18601',regioncode) from region where stage=3; 
 
 
-//µ¼ÈëuserºÍcustomer±íµÄÊı¾İ
-//Èç¹ûcustomerinfoµ¼Èë²»³É¹¦£¬Çë½«mysqlÅäÖÃµÄ strict mode È¡Ïû¹´Ñ¡£¬ÔÙ´Îµ¼Èë¼´¿É
+//å¯¼å…¥userå’Œcustomerè¡¨çš„æ•°æ®
+//å¦‚æœcustomerinfoå¯¼å…¥ä¸æˆåŠŸï¼Œè¯·å°†mysqlé…ç½®çš„ strict mode å–æ¶ˆå‹¾é€‰ï¼Œå†æ¬¡å¯¼å…¥å³å¯
 load data infile "G:/ExtraceData/userinfo.txt" into table extrace.user;
 load data infile "G:/ExtraceData/customerinfo.txt" into table extrace.customer;
 
-µ¼ÈëÕâĞ©Êı¾İ¾Í¿É½¨ÔËµ¥ÁË
+å¯¼å…¥è¿™äº›æ•°æ®å°±å¯å»ºè¿å•äº†
 
 
-//µ¼³öÊı¾İ
+//å¯¼å‡ºæ•°æ®
 select * from userinfo into outfile "G:/ExtraceData/userinfo.txt";
 select * from customerinfo into outfile "G:/ExtraceData/customerinfo.txt";
-
+å¼ 

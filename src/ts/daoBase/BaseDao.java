@@ -36,7 +36,11 @@ public class BaseDao<T, PK extends Serializable> extends HibernateDaoSupport
 
 	@Override
 	public T get(PK id) {
-		return getHibernateTemplate().load(getEntityClass(), id);
+		try {
+			return getHibernateTemplate().load(getEntityClass(), id);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override

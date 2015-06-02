@@ -84,10 +84,10 @@ public interface IDomainService {
 	@Path("/getTransPackage/{id}")
 	public Response getTransPackage(@PathParam("id") String id);
 
-	@POST
+	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/newTransPackage")
-	public Response newTransPackage(String id, int uid);
+	@Path("/newTransPackage/id/{id}")
+	public Response newTransPackage(@PathParam("id") String id);
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

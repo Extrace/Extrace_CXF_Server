@@ -90,6 +90,9 @@
 	</bean>
 	<bean id="transHistoryDao" class="ts.daoImpl.TransHistoryDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
+		<property name="userDao" ref="userDao"></property>
+		<property name="packageDao" ref="packageDao"></property>
+		<property name="distributeCenterDao" ref="distributeCenterDao"></property>
 	</bean>
 	<bean id="distributeCenterDao" class="ts.daoImpl.DistributeCenterDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>

@@ -70,14 +70,14 @@ public class DomainService implements IDomainService {
 
 	@Override
 	public List<ExpressSheet> getExpressList(String property,
-			String restrictions, String value) {
+			String restrictions, String value) { // id like 6
 		List<ExpressSheet> list = new ArrayList<ExpressSheet>();
 		switch (restrictions.toLowerCase()) {
 		case "eq":
-			list = expressSheetDao.findBy(property, value, "ID", true);
+			list = expressSheetDao.findBy(property, value, "id", true);
 			break;
 		case "like":
-			list = expressSheetDao.findLike(property, value + "%", "ID", true);
+			list = expressSheetDao.findLike(property, value + "%", "id", true);
 			break;
 		}
 		return list;
@@ -93,8 +93,14 @@ public class DomainService implements IDomainService {
 	@Override
 	public Response getExpressSheet(String id) {
 		ExpressSheet es = expressSheetDao.get(id);
-		System.out.println(es.toString());
-		return Response.ok(es).header("EntityClass", "ExpressSheet").build();
+		if (es != null) {
+			System.out.println(es.toString());
+			return Response.ok(es).header("EntityClass", "ExpressSheet")
+					.build();
+		} else {
+			return Response.ok(es).header("EntityClass", "N_ExpressSheet")
+					.build();// 不存在此运单
+		}
 	}
 
 	@Override
@@ -117,43 +123,48 @@ public class DomainService implements IDomainService {
 		}
 
 		if (es != null) {
-			// if(es.getStatus() != 0)
-			// return Response.ok(es).header("EntityClass",
-			// "L_ExpressSheet").build(); //已经存在,且不能更改
-			// else
 			return Response.ok(es).header("EntityClass", "E_ExpressSheet")
 					.build(); // 已经存在
 		}
 		try {
-			System.out.println("***start try****");
-			// String pkgId = userDao.get(uid).getReceivepid();
 			User user = userDao.get(uid);
-			System.out.println("***start try****" + user.toString());
-			String pkgId = user.getReceivepid();
-			System.out.println("***start try****" + pkgId);
 			ExpressSheet nes = new ExpressSheet();
-			nes.setId(id);
-			nes.setExpresstype(0);
-			nes.setAccepter(String.valueOf(uid));
-			nes.setAcceptetime(tm);
-			nes.setStatus(ExpressSheet.STATUS.STATUS_CREATED);
-			expressSheetDao.save(nes);
-			DistributeCenter pkg_add = new DistributeCenter();
-			pkg_add.setPackageid(pkgId);
-			pkg_add.setExpressSheetID(id);
-			distributeCenterDao.save(pkg_add);
-			return Response.ok(nes).header("EntityClass", "ExpressSheet")
-					.build();
+			String pkgId = user.getReceivepid();
+			if (!pkgId.equals("")) {
+				nes.setId(id);
+				nes.setExpresstype(0);
+				nes.setAccepter(String.valueOf(uid));
+				nes.setAcceptetime(tm);
+				// nes.setStatus(ExpressSheet.STATUS.STATUS_CREATED);
+				nes.setStatus(ExpressSheet.STATUS.STATUS_CREATED);
+				expressSheetDao.save(nes);
+				DistributeCenter pkg_add = new DistributeCenter();
+				// 为什么在新建运单的过程中，直接将快件放入user的揽收包裹中？
+				// 可是下面还有一个方法是专门用来揽收快件的？
+				pkg_add.setPackageid(pkgId);
+				pkg_add.setExpressSheetID(id);
+				distributeCenterDao.save(pkg_add);
+				return Response.ok(nes).header("EntityClass", "ExpressSheet")
+						.build();
+			} else {
+				return Response.ok(nes)
+						.header("EntityClass", "NP_ExpressSheet").build();
+			}
 		} catch (Exception e) {
-			System.out.println("***try error****");
 			return Response.serverError().entity(e.getMessage()).build();
 		}
 	}
 
 	@Override
 	public Response saveExpressSheet(ExpressSheet obj) {
+
 		try {
+			obj.setStatus(ExpressSheet.STATUS.STATUS_RECEIVED);
+
+			System.out.println("+++add done+++");
 			expressSheetDao.save(obj);
+			System.out.println("+++add done+++");
+			transHistoryDao.add(obj);
 			return Response.ok(obj).header("EntityClass", "R_ExpressSheet")
 					.build();
 		} catch (Exception e) {
@@ -161,6 +172,9 @@ public class DomainService implements IDomainService {
 		}
 	}
 
+	/**
+	 * 揽收快件？
+	 */
 	@Override
 	public Response ReceiveExpressSheetId(String id, int uid) {
 		try {
@@ -169,9 +183,6 @@ public class DomainService implements IDomainService {
 			nes.setAcceptetime(new Date());
 			nes.setStatus(ExpressSheet.STATUS.STATUS_RECEIVED);
 			expressSheetDao.save(nes);
-			// TransPackage tp = new TransPackage();
-
-			// transPackageDao.save(tp);
 			return Response.ok(nes).header("EntityClass", "ExpressSheet")
 					.build();
 		} catch (Exception e) {
@@ -181,14 +192,50 @@ public class DomainService implements IDomainService {
 
 	@Override
 	public Response DispatchExpressSheet(String id, int uid) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			ExpressSheet nes = expressSheetDao.get(id);
+			if (nes != null) {
+				User user = userDao.get(uid);
+				String pkgId = user.getDeliverpid();
+				if (!pkgId.equals("")) {
+					nes.setDeliver(String.valueOf(uid));
+					// nes.setDelivetime(new Date());
+					nes.setStatus(ExpressSheet.STATUS.STATUS_DISPATCHED);
+					expressSheetDao.save(nes);
+					DistributeCenter pkg_add = new DistributeCenter();
+					// 为什么在新建运单的过程中，直接将快件放入user的揽收包裹中？
+					// 可是下面还有一个方法是专门用来揽收快件的？
+					pkg_add.setPackageid(pkgId);
+					pkg_add.setExpressSheetID(id);
+					distributeCenterDao.save(pkg_add);
+					return Response.ok(nes)
+							.header("EntityClass", "D_ExpressSheet").build();
+				} else {
+					return Response.ok(nes)
+							.header("EntityClass", "DP_ExpressSheet").build();
+				}
+			} else {
+				return Response.ok(nes).header("EntityClass", "N_ExpressSheet")
+						.build();
+			}
+		} catch (Exception e) {
+			return Response.serverError().entity(e.getMessage()).build();
+		}
 	}
 
 	@Override
-	public Response DeliveryExpressSheetId(String obj, int uid) {
-		// TODO Auto-generated method stub
-		return null;
+	public Response DeliveryExpressSheetId(String id, int uid) {
+		try {
+			ExpressSheet nes = expressSheetDao.get(id);
+			// nes.setDeliver(String.valueOf(uid));
+			nes.setDelivetime(new Date());
+			nes.setStatus(ExpressSheet.STATUS.STATUS_DELIVERIED);
+			expressSheetDao.save(nes);
+			return Response.ok(nes).header("EntityClass", "ExpressSheet")
+					.build();
+		} catch (Exception e) {
+			return Response.serverError().entity(e.getMessage()).build();
+		}
 	}
 
 	@Override
@@ -197,10 +244,10 @@ public class DomainService implements IDomainService {
 		List<Package> list = new ArrayList<Package>();
 		switch (restrictions.toLowerCase()) {
 		case "eq":
-			list = packageDao.findBy(property, value, "ID", true);
+			list = packageDao.findBy(property, value, "id", true);
 			break;
 		case "like":
-			list = packageDao.findLike(property, value + "%", "ID", true);
+			list = packageDao.findLike(property, value + "%", "id", true);
 			break;
 		}
 		return list;
@@ -209,19 +256,18 @@ public class DomainService implements IDomainService {
 	@Override
 	public Response getTransPackage(String id) {
 		Package es = packageDao.get(id);
-		return Response.ok(es).header("EntityClass", "TransPackage").build();
+		return Response.ok(es).header("EntityClass", "Package").build();
 	}
 
 	@Override
-	public Response newTransPackage(String id, int uid) {
+	public Response newTransPackage(String id) {
 		try {
 			Package npk = new Package();
 			npk.setId(id);
-			// npk.setStatus(value);
 			npk.setCreatetime(new Date());
+			npk.setStatus(Package.STATUS.STATUS_CREATED);
 			packageDao.save(npk);
-			return Response.ok(npk).header("EntityClass", "TransPackage")
-					.build();
+			return Response.ok(npk).header("EntityClass", "Package").build();
 		} catch (Exception e) {
 			return Response.serverError().entity(e.getMessage()).build();
 		}
@@ -231,8 +277,7 @@ public class DomainService implements IDomainService {
 	public Response savePackage(Package obj) {
 		try {
 			packageDao.save(obj);
-			return Response.ok(obj).header("EntityClass", "R_TransPackage")
-					.build();
+			return Response.ok(obj).header("EntityClass", "R_Package").build();
 		} catch (Exception e) {
 			return Response.serverError().entity(e.getMessage()).build();
 		}

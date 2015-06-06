@@ -44,53 +44,6 @@ public class TransNode implements Serializable {
 	@Column(name = "telcode", nullable = false, length = 24)
 	private String telcode;
 
-	// public void setID(String value) {
-	// this.ID = value;
-	// }
-	//
-	// public String getID() {
-	// return ID;
-	// }
-	// public void setNodeName(String value) {
-	// this.nodeName = value;
-	// }
-	//
-	// public String getNodeName() {
-	// return nodeName;
-	// }
-	//
-	// public void setNodeType(int value) {
-	// this.nodeType = value;
-	// }
-	//
-	// public int getNodeType() {
-	// return nodeType;
-	// }
-	//
-	// public void setRegionCode(String value) {
-	// this.regionCode = value;
-	// }
-	//
-	// public String getRegionCode() {
-	// return regionCode;
-	// }
-	//
-	// public void setPostCode(Integer value) {
-	// this.postCode = value;
-	// }
-	//
-	// public Integer getPostCode() {
-	// return postCode;
-	// }
-	//
-	// public void setTelCode(String value) {
-	// this.telCode = value;
-	// }
-	//
-	// public String getTelCode() {
-	// return telCode;
-	// }
-
 	@Override
 	public String toString() {
 		return toString(false);
@@ -160,9 +113,26 @@ public class TransNode implements Serializable {
 			sb.append("RegionCode=").append(getRegioncode()).append(" ");
 			sb.append("PosCode=").append(getPoscode()).append(" ");
 			sb.append("TelCode=").append(getTelcode()).append(" ");
+			if (getPosition() != null) {
+				sb.append("Position=").append(getPosition().toString())
+						.append(" ");
+			} else {
+				sb.append("Position=").append("null").append(" ");
+			}
 			sb.append("]");
 			return sb.toString();
 		}
+	}
+
+	@Transient
+	private Position position;
+
+	public Position getPosition() {
+		return position;
+	}
+
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 
 	@Transient

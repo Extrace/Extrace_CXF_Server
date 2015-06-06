@@ -9,11 +9,13 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import ts.daoImpl.CustomerDao;
+import ts.daoImpl.PositionDao;
 import ts.daoImpl.RegionDao;
 import ts.daoImpl.TransNodeDao;
 import ts.daoImpl.UserDao;
 import ts.model.CodeNamePair;
 import ts.model.Customer;
+import ts.model.Position;
 import ts.model.Region;
 import ts.model.TransNode;
 import ts.model.User;
@@ -26,6 +28,7 @@ public class MiscService implements IMiscService {
 	private RegionDao regionDao;
 	private CustomerDao customerDao;
 	private UserDao userDao;
+	private PositionDao positionDao;
 
 	public TransNodeDao getTransNodeDao() {
 		return transNodeDao;
@@ -41,6 +44,14 @@ public class MiscService implements IMiscService {
 
 	public void setRegionDao(RegionDao dao) {
 		this.regionDao = dao;
+	}
+
+	public PositionDao getPositionDao() {
+		return positionDao;
+	}
+
+	public void setPositionDao(PositionDao positionDao) {
+		this.positionDao = positionDao;
 	}
 
 	public CustomerDao getCustomerDao() {
@@ -64,18 +75,6 @@ public class MiscService implements IMiscService {
 		// nodes.Load();
 		// regions = new RegionCatalog();
 		// regions.Load();
-	}
-
-	@Override
-	public TransNode getNode(String code) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<TransNode> getNodesList(String regionCode, int type) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -169,7 +168,6 @@ public class MiscService implements IMiscService {
 	@Override
 	public void RefreshSessionList() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -201,4 +199,52 @@ public class MiscService implements IMiscService {
 	public List<Customer> getAllCustomer() {
 		return customerDao.findAllCustomer("id", true);
 	}
+
+	@Override
+	public List<TransNode> getTransNodeList() {
+		return null;
+	}
+
+	@Override
+	public List<TransNode> getTransNodeListByName(String name) {
+
+		return transNodeDao.findByName(name);
+	}
+
+	@Override
+	public List<TransNode> getTransNodeListByTelCode(String TelCode) {
+
+		return transNodeDao.findByTelCode(TelCode);
+	}
+
+	@Override
+	public List<TransNode> getNodebyId(String id) {
+		return transNodeDao.findById(id);
+	}
+
+	@Override
+	public List<TransNode> getNode(String code) {
+
+		return transNodeDao.findByRegionCode(code);
+	}
+
+	@Override
+	public List<TransNode> getNodebyName(String name) {
+
+		return transNodeDao.findByName(name);
+	}
+
+	@Override
+	public List<TransNode> getNodesList(String regionCode, int type) {
+
+		return null;
+	}
+
+	@Override
+	public Response getPositionByTid(String tid) {
+		// TODO Auto-generated method stub
+		Position p = positionDao.findPositionByTid(tid);
+		return Response.ok(p).header("EntityClass", "Position").build();
+	}
+
 }

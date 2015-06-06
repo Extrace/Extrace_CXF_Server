@@ -34,33 +34,32 @@ public class Position implements Serializable {
 	@Column(name = "y", nullable = false, length = 10)
 	private float y;
 
-	@SuppressWarnings("unused")
-	private void setPoscode(int value) {
-		this.poscode = value;
+	public int getORMId() {
+		return getPoscode();
 	}
 
 	public int getPoscode() {
 		return poscode;
 	}
 
-	public int getORMId() {
-		return getPoscode();
-	}
-
-	public void setX(float value) {
-		this.x = value;
+	public void setPoscode(int poscode) {
+		this.poscode = poscode;
 	}
 
 	public float getX() {
 		return x;
 	}
 
-	public void setY(float value) {
-		this.y = value;
+	public void setX(float x) {
+		this.x = x;
 	}
 
 	public float getY() {
 		return y;
+	}
+
+	public void setY(float y) {
+		this.y = y;
 	}
 
 	@Override

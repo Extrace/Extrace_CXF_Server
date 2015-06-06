@@ -27,6 +27,11 @@ public interface IMiscService {
 	@Path("/getUser")
 	public Response getUser(@QueryParam("uname") String uname);
 
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/getPosition/tid/{tid}")
+	public Response getPositionByTid(@PathParam("tid") String tid);
+
 	/**
 	 * 获取转运结点ById
 	 * 
@@ -34,9 +39,25 @@ public interface IMiscService {
 	 * @return
 	 */
 	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/getNode/{NodeCode}")
-	public TransNode getNode(@PathParam("NodeCode") String code);
+	public List<TransNode> getNode(@PathParam("NodeCode") String code);
+
+	/**
+	 * 获取转运结点ById
+	 * 
+	 * @param code
+	 * @return
+	 */
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/getNodebyId/{id}")
+	public List<TransNode> getNodebyId(@PathParam("id") String id);
+
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/getNodebyName/{name}")
+	public List<TransNode> getNodebyName(@PathParam("name") String name);
 
 	/**
 	 * 获取转运结点列表
@@ -51,6 +72,22 @@ public interface IMiscService {
 	public List<TransNode> getNodesList(
 			@PathParam("RegionCode") String regionCode,
 			@PathParam("Type") int type);
+
+	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/getTransNodeList")
+	public List<TransNode> getTransNodeList();
+
+	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/getTransNodeListByName/{name}")
+	public List<TransNode> getTransNodeListByName(@PathParam("name") String name);
+
+	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/getTransNodeListByTelCode/{TelCode}")
+	public List<TransNode> getTransNodeListByTelCode(
+			@PathParam("TelCode") String TelCode);
 
 	// 客户信息操作接口===============================================================================================
 

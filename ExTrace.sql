@@ -2,12 +2,14 @@
 
 /*数据库名称统一为 extrace，编码为UTF-8 */
 
+/*distrubtecenter实际为包裹内容表 */
+
 DROP TABLE IF EXISTS user;  -- 用户表
 DROP TABLE IF EXISTS customer; -- 客户表
 DROP TABLE IF EXISTS expresssheet; -- 运单（快件）表
 DROP TABLE IF EXISTS package; -- 包裹表
 DROP TABLE IF EXISTS transnode; -- 转运结点表
-DROP TABLE IF EXISTS distributecenter; -- 分拣中心表
+DROP TABLE IF EXISTS distributecenter; -- 包裹内容表
 DROP TABLE IF EXISTS region; -- 区域表
 DROP TABLE IF EXISTS position; -- 位置表
 DROP TABLE IF EXISTS transhistory; -- 转运历史表
@@ -105,7 +107,7 @@ CREATE TABLE transnode
 CHARACTER SET utf8; 
 
 /*
-分拣中心信息表
+包裹内容信息表
 */
 CREATE TABLE distributecenter 
   ( 

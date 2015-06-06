@@ -34,6 +34,12 @@ public interface IDomainService {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/UnpackExpressList/PackageId/{PackageId}/uid/{UId}")
+	public List<ExpressSheet> UnpackExpressListInPackage(
+			@PathParam("PackageId") String packageId, @PathParam("UId") int uid);
+
+	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("/getExpressSheet/{id}")
 	public Response getExpressSheet(@PathParam("id") String id);
 
@@ -63,6 +69,13 @@ public interface IDomainService {
 	@Path("/dispatchExpressSheetId/id/{id}/uid/{uid}")
 	public Response DispatchExpressSheet(@PathParam("id") String id,
 			@PathParam("uid") int uid);
+
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/addExpressSheetId/id/{id}/pid/{pid}/uid/{uid}")
+	public Response AddExpressSheet(@PathParam("id") String id,
+			@PathParam("pid") String pid, @PathParam("uid") int uid);
 
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)

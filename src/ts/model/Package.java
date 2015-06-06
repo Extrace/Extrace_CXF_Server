@@ -18,7 +18,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -27,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "package")
-@XmlRootElement(name = "Package")
+@XmlRootElement(name = "package")
 public class Package implements Serializable {
 	/**
 	 * 
@@ -39,8 +38,9 @@ public class Package implements Serializable {
 
 	@Column(name = "id", nullable = false)
 	@Id
-	@GeneratedValue(generator = "MODEL_TRANSPACKAGE_ID_GENERATOR")
-	@org.hibernate.annotations.GenericGenerator(name = "MODEL_TRANSPACKAGE_ID_GENERATOR", strategy = "assigned")
+	// @GeneratedValue(generator = "MODEL_TRANSPACKAGE_ID_GENERATOR")
+	// @org.hibernate.annotations.GenericGenerator(name =
+	// "MODEL_TRANSPACKAGE_ID_GENERATOR", strategy = "assigned")
 	private String id;
 
 	@Column(name = "sourcenode", nullable = true, length = 8)
@@ -69,49 +69,45 @@ public class Package implements Serializable {
 	// private java.util.Set<TransHistory> transHistory = new
 	// java.util.HashSet<TransHistory>();
 
-	public void setId(String value) {
-		this.id = value;
-	}
+	// public void setId(String value) {
+	// this.id = value;
+	// }
+	//
+	// public String getId() {
+	// return id;
+	// }
 
-	public String getId() {
-		return id;
-	}
-
-	public String getORMId() {
-		return getId();
-	}
-
-	public void setSourcenode(String value) {
-		this.sourcenode = value;
-	}
-
-	public String getSourcenode() {
-		return sourcenode;
-	}
-
-	public void setTargetnode(String value) {
-		this.targetnode = value;
-	}
-
-	public String getTargetnode() {
-		return targetnode;
-	}
-
-	public void setCreatetime(Date value) {
-		this.createtime = value;
-	}
-
-	public Date getCreatetime() {
-		return createtime;
-	}
-
-	public void setStatus(int value) {
-		this.status = value;
-	}
-
-	public int getStatus() {
-		return status;
-	}
+	// public void setSourcenode(String value) {
+	// this.sourcenode = value;
+	// }
+	//
+	// public String getSourcenode() {
+	// return sourcenode;
+	// }
+	//
+	// public void setTargetnode(String value) {
+	// this.targetnode = value;
+	// }
+	//
+	// public String getTargetnode() {
+	// return targetnode;
+	// }
+	//
+	// public void setCreatetime(Date value) {
+	// this.createtime = value;
+	// }
+	//
+	// public Date getCreatetime() {
+	// return createtime;
+	// }
+	//
+	// public void setStatus(int value) {
+	// this.status = value;
+	// }
+	//
+	// public int getStatus() {
+	// return status;
+	// }
 
 	// public void setExpreesSheet(java.util.Set<ExpreesSheet> value) {
 	// this.expreesSheet = value;
@@ -129,6 +125,50 @@ public class Package implements Serializable {
 	// public java.util.Set<TransHistory> getTransHistory() {
 	// return transHistory;
 	// }
+
+	public String getId() {
+		return id;
+	}
+
+	public String getORMId() {
+		return getId();
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getSourcenode() {
+		return sourcenode;
+	}
+
+	public void setSourcenode(String sourcenode) {
+		this.sourcenode = sourcenode;
+	}
+
+	public String getTargetnode() {
+		return targetnode;
+	}
+
+	public void setTargetnode(String targetnode) {
+		this.targetnode = targetnode;
+	}
+
+	public Date getCreatetime() {
+		return createtime;
+	}
+
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
 
 	@Override
 	public String toString() {
@@ -148,9 +188,39 @@ public class Package implements Serializable {
 			sb.append("Status=").append(getStatus()).append(" ");
 			// sb.append("ExpreesSheet.size=").append(getExpreesSheet().size()).append(" ");
 			// sb.append("TransHistory.size=").append(getTransHistory().size()).append(" ");
-			sb.append("]");
+			if (getSourceTransNode() != null) {
+				sb.append("sourNode=").append(getSourceTransNode().toString())
+						.append(" ");
+			}
+			if (getTargetTransNode() != null) {
+				sb.append("TransNode=").append(getTargetTransNode().toString())
+						.append(" ");
+				sb.append("]");
+			}
 			return sb.toString();
 		}
+	}
+
+	@Transient
+	private TransNode sourceTransNode;
+
+	public TransNode getSourceTransNode() {
+		return sourceTransNode;
+	}
+
+	public void setSourceTransNode(TransNode sourceTransNode) {
+		this.sourceTransNode = sourceTransNode;
+	}
+
+	@Transient
+	private TransNode targetTransNode;
+
+	public TransNode getTargetTransNode() {
+		return targetTransNode;
+	}
+
+	public void setTargetTransNode(TransNode targetTransNode) {
+		this.targetTransNode = targetTransNode;
 	}
 
 	@Transient

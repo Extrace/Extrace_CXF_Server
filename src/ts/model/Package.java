@@ -14,14 +14,18 @@
 package ts.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @org.hibernate.annotations.Proxy(lazy = false)
@@ -55,76 +59,37 @@ public class Package implements Serializable {
 	@Column(name = "status", nullable = false, length = 4)
 	private int status;
 
-	// @ManyToMany(mappedBy="transPackage", targetEntity=ExpreesSheet.class)
-	// @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-	// org.hibernate.annotations.CascadeType.LOCK})
-	// @org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)
-	// private java.util.Set<ExpreesSheet> expreesSheet = new
-	// java.util.HashSet<ExpreesSheet>();
-	//
-	// @OneToMany(mappedBy="packeg", targetEntity=TransHistory.class)
-	// @org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-	// org.hibernate.annotations.CascadeType.LOCK})
-	// @org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.TRUE)
-	// private java.util.Set<TransHistory> transHistory = new
-	// java.util.HashSet<TransHistory>();
+	// @ManyToMany(mappedBy = "Package", targetEntity = ExpressSheet.class)
+	// @org.hibernate.annotations.Cascade({
+	// org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+	// org.hibernate.annotations.CascadeType.LOCK })
+	// @org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.FALSE)
+	// private List<ExpressSheet> expreesSheet = new ArrayList<ExpressSheet>();
 
-	// public void setId(String value) {
-	// this.id = value;
-	// }
-	//
-	// public String getId() {
-	// return id;
-	// }
+	@OneToMany(mappedBy = "packageid", targetEntity = TransHistory.class)
+	@org.hibernate.annotations.Cascade({
+			org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+			org.hibernate.annotations.CascadeType.LOCK })
+	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.FALSE)
+	private List<TransHistory> transHistory = new ArrayList<TransHistory>();
 
-	// public void setSourcenode(String value) {
-	// this.sourcenode = value;
-	// }
-	//
-	// public String getSourcenode() {
-	// return sourcenode;
-	// }
-	//
-	// public void setTargetnode(String value) {
-	// this.targetnode = value;
-	// }
-	//
-	// public String getTargetnode() {
-	// return targetnode;
-	// }
-	//
-	// public void setCreatetime(Date value) {
-	// this.createtime = value;
-	// }
-	//
-	// public Date getCreatetime() {
-	// return createtime;
-	// }
-	//
-	// public void setStatus(int value) {
-	// this.status = value;
-	// }
-	//
-	// public int getStatus() {
-	// return status;
-	// }
-
-	// public void setExpreesSheet(java.util.Set<ExpreesSheet> value) {
+	// public void setExpreesSheet(List<ExpressSheet> value) {
 	// this.expreesSheet = value;
 	// }
 	//
-	// public java.util.Set<ExpreesSheet> getExpreesSheet() {
+	// @XmlTransient
+	// public List<ExpressSheet> getExpreesSheet() {
 	// return expreesSheet;
 	// }
-	//
-	//
-	// public void setTransHistory(java.util.Set<TransHistory> value) {
-	// this.transHistory = value;
-	// }
-	//
-	// public java.util.Set<TransHistory> getTransHistory() {
-	// return transHistory;
-	// }
+
+	public void setTransHistory(List<TransHistory> value) {
+		this.transHistory = value;
+	}
+
+	@XmlTransient
+	public List<TransHistory> getTransHistory() {
+		return transHistory;
+	}
 
 	public String getId() {
 		return id;
@@ -186,8 +151,10 @@ public class Package implements Serializable {
 			sb.append("TargetNode=").append(getTargetnode()).append(" ");
 			sb.append("CreateTime=").append(getCreatetime()).append(" ");
 			sb.append("Status=").append(getStatus()).append(" ");
-			// sb.append("ExpreesSheet.size=").append(getExpreesSheet().size()).append(" ");
-			// sb.append("TransHistory.size=").append(getTransHistory().size()).append(" ");
+			// sb.append("ExpreesSheet.size=").append(getExpreesSheet().size())
+			// .append(" ");
+			sb.append("TransHistory.size=").append(getTransHistory().size())
+					.append(" ");
 			if (getSourceTransNode() != null) {
 				sb.append("sourNode=").append(getSourceTransNode().toString())
 						.append(" ");
@@ -221,6 +188,17 @@ public class Package implements Serializable {
 
 	public void setTargetTransNode(TransNode targetTransNode) {
 		this.targetTransNode = targetTransNode;
+	}
+
+	@Transient
+	private int uid;
+
+	public int getUid() {
+		return uid;
+	}
+
+	public void setUid(int uid) {
+		this.uid = uid;
 	}
 
 	@Transient

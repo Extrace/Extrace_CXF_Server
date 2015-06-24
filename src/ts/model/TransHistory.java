@@ -14,6 +14,7 @@
 package ts.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,10 +25,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "transhistory")
+@XmlRootElement(name = "TransHistory")
 public class TransHistory implements Serializable {
 	/**
 	 * 
@@ -49,7 +53,7 @@ public class TransHistory implements Serializable {
 	private Package packageid;
 
 	@Column(name = "acttime", nullable = false)
-	private java.sql.Timestamp acttime;
+	private Date acttime;
 
 	@Column(name = "poscode", nullable = true, length = 10)
 	private Integer poscode;
@@ -73,11 +77,11 @@ public class TransHistory implements Serializable {
 		return getSn();
 	}
 
-	public void setActtime(java.sql.Timestamp value) {
+	public void setActtime(Date value) {
 		this.acttime = value;
 	}
 
-	public java.sql.Timestamp getActtime() {
+	public Date getActtime() {
 		return acttime;
 	}
 
@@ -134,9 +138,42 @@ public class TransHistory implements Serializable {
 			sb.append("PosCode=").append(getPoscode()).append(" ");
 			sb.append("UidFrom=").append(getUidfrom()).append(" ");
 			sb.append("UidTo=").append(getUidto()).append(" ");
+			sb.append("UserF=").append(getUserFrom()).append(" ");
+			sb.append("UserT=").append(getUserTo()).append(" ");
 			sb.append("]");
 			return sb.toString();
 		}
+	}
+
+	@Transient
+	private User userTo;
+	@Transient
+	private User userFrom;
+	@Transient
+	private Position position;
+
+	public User getUserTo() {
+		return userTo;
+	}
+
+	public void setUserTo(User userTo) {
+		this.userTo = userTo;
+	}
+
+	public User getUserFrom() {
+		return userFrom;
+	}
+
+	public void setUserFrom(User userFrom) {
+		this.userFrom = userFrom;
+	}
+
+	public Position getPosition() {
+		return position;
+	}
+
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 
 }

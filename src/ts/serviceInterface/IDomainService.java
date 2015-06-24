@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 
 import ts.model.ExpressSheet;
 import ts.model.Package;
+import ts.model.TransHistory;
 
 @Path("/Domain")
 // 业务操作
@@ -27,15 +28,21 @@ public interface IDomainService {
 			@PathParam("Value") String value);
 
 	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/getExpressListInPackage/PackageId/{PackageId}")
 	public List<ExpressSheet> getExpressListInPackage(
 			@PathParam("PackageId") String packageId);
 
 	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/getTransHistoryList/ExpId/{ExpressSheetId}")
+	public List<TransHistory> getTransHistoryList(
+			@PathParam("ExpressSheetId") String eid);
+
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/UnpackExpressList/PackageId/{PackageId}/uid/{UId}")
-	public List<ExpressSheet> UnpackExpressListInPackage(
+	public Response UnpackExpressListInPackage(
 			@PathParam("PackageId") String packageId, @PathParam("UId") int uid);
 
 	@GET
@@ -94,13 +101,31 @@ public interface IDomainService {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/getPackageListByUid/uid/{uid}")
+	public List<Package> getPackageListByUid(@PathParam("uid") int uid);
+
+	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("/getTransPackage/{id}")
 	public Response getTransPackage(@PathParam("id") String id);
 
 	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/packTransPackage/pid/{pid}/uid/{uid}")
+	public Response packTransPackage(@PathParam("pid") String id,
+			@PathParam("uid") int uid);
+
+	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("/receivePackagByUid/pid/{pid}/uid/{uid}")
+	public Response receivePackageByUid(@PathParam("pid") String id,
+			@PathParam("uid") int uid);
+
+	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/newTransPackage/id/{id}")
-	public Response newTransPackage(@PathParam("id") String id);
+	@Path("/newTransPackage/id/{id}/uid/{uid}")
+	public Response newTransPackage(@PathParam("id") String id,
+			@PathParam("id") int uid);
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

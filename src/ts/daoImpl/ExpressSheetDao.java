@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import ts.daoBase.BaseDao;
 import ts.model.Customer;
@@ -52,6 +53,18 @@ public class ExpressSheetDao extends BaseDao<ExpressSheet, String> {
 		List<ExpressSheet> list = new ArrayList<ExpressSheet>();
 		list = findBy("id", true, Restrictions.sqlRestriction(sql));
 		return list;
+	}
+
+	public static void main(String args[]) {
+
+		org.springframework.context.ApplicationContext context = new ClassPathXmlApplicationContext(
+				"applicationContext.xml");
+
+		ExpressSheetDao ed = (ExpressSheetDao) context
+				.getBean("expressSheetDao");
+		PackageDao pd = (PackageDao) context.getBean("packageDao");
+
+		System.out.println(pd.get("1111"));
 	}
 
 }

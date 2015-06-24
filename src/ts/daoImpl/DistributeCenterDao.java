@@ -13,13 +13,9 @@ public class DistributeCenterDao extends BaseDao<DistributeCenter, Integer> {
 
 	List<DistributeCenter> list;
 
-	public DistributeCenter getPkgByEsid(String id) {
-		try {
-			list = findBy("expresssheetid", id, "sn", true);
-		} catch (Exception e) {
-			return null;
-		}
-		return list.get(0);
+	public List<DistributeCenter> getDistributerByEsid(String id) {
+		System.out.println("*****esid: " + id);
+		return findBy("expresssheetid", id, "sn", true);
 	}
 
 	public void unPack(String pkgId) {
@@ -37,4 +33,5 @@ public class DistributeCenterDao extends BaseDao<DistributeCenter, Integer> {
 			remove(dc);
 		}
 	}
+
 }

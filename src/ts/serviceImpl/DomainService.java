@@ -1,5 +1,6 @@
 package ts.serviceImpl;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import ts.daoImpl.UserDao;
 import ts.model.DistributeCenter;
 import ts.model.ExpressSheet;
 import ts.model.Package;
+import ts.model.TransHistory;
 import ts.model.User;
 import ts.serviceInterface.IDomainService;
 
@@ -94,7 +96,6 @@ public class DomainService implements IDomainService {
 	public Response getExpressSheet(String id) {
 		ExpressSheet es = expressSheetDao.get(id);
 		if (es != null) {
-			System.out.println(es.toString());
 			return Response.ok(es).header("EntityClass", "ExpressSheet")
 					.build();
 		} else {
@@ -105,16 +106,10 @@ public class DomainService implements IDomainService {
 
 	@Override
 	public Response newExpressSheet(String id, int uid) {
-		// 产生一个不带毫秒的时间,不然,SQL时间和JAVA时间格式不一致
-		System.out.println("***start new exp****\n" + "expid: " + id + " uid:"
-				+ uid);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		Date tm = new Date();
-		try {
-			tm = sdf.parse(sdf.format(new Date()));
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
+		// // 产生一个不带毫秒的时间,不然,SQL时间和JAVA时间格式不一致
+		// System.out.println("***start new exp****\n" + "expid: " + id +
+		// " uid:"
+		// + uid);
 
 		ExpressSheet es = null;
 		try {
@@ -134,13 +129,10 @@ public class DomainService implements IDomainService {
 				nes.setId(id);
 				nes.setExpresstype(0);
 				nes.setAccepter(String.valueOf(uid));
-				nes.setAcceptetime(tm);
-				// nes.setStatus(ExpressSheet.STATUS.STATUS_CREATED);
+				// nes.setAcceptetime(tm);
 				nes.setStatus(ExpressSheet.STATUS.STATUS_CREATED);
 				expressSheetDao.save(nes);
 				DistributeCenter pkg_add = new DistributeCenter();
-				// 为什么在新建运单的过程中，直接将快件放入user的揽收包裹中？
-				// 可是下面还有一个方法是专门用来揽收快件的？
 				pkg_add.setPackageid(pkgId);
 				pkg_add.setExpressSheetID(id);
 				distributeCenterDao.save(pkg_add);
@@ -161,11 +153,24 @@ public class DomainService implements IDomainService {
 		try {
 			if (obj.getStatus() == ExpressSheet.STATUS.STATUS_CREATED) {
 				obj.setStatus(ExpressSheet.STATUS.STATUS_RECEIVED);
+				// 产生一个不带毫秒的时间,不然,SQL时间和JAVA时间格式不一致
+				SimpleDateFormat sdf = new SimpleDateFormat(
+						"yyyy-MM-dd'T'HH:mm:ss");
+				Date tm = new Date();
+				try {
+					tm = sdf.parse(sdf.format(new Date().getTime()));
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+				obj.setAcceptetime(tm);
+				transHistoryDao.addRcvEsHis(obj, tm);
+				expressSheetDao.save(obj);
+				return Response.ok(obj).header("EntityClass", "R_ExpressSheet")
+						.build();
+			} else {
+				return Response.ok(obj)
+						.header("EntityClass", "RN_ExpressSheet").build();
 			}
-			expressSheetDao.save(obj);
-			transHistoryDao.add(obj);
-			return Response.ok(obj).header("EntityClass", "R_ExpressSheet")
-					.build();
 		} catch (Exception e) {
 			return Response.serverError().entity(e.getMessage()).build();
 		}
@@ -179,7 +184,7 @@ public class DomainService implements IDomainService {
 		try {
 			ExpressSheet nes = expressSheetDao.get(id);
 			nes.setAccepter(String.valueOf(uid));
-			nes.setAcceptetime(new Date());
+			nes.setAcceptetime(new Timestamp(new Date().getTime()));
 			nes.setStatus(ExpressSheet.STATUS.STATUS_RECEIVED);
 			expressSheetDao.save(nes);
 			return Response.ok(nes).header("EntityClass", "ExpressSheet")
@@ -194,7 +199,8 @@ public class DomainService implements IDomainService {
 	public Response DispatchExpressSheet(String id, int uid) {
 		try {
 			ExpressSheet nes = expressSheetDao.get(id);
-			if (nes != null) {
+			if (nes != null
+					&& nes.getStatus() == ExpressSheet.STATUS.STATUS_PARTATION) {
 				User user = userDao.get(uid);
 				String pkgId = user.getDeliverpid();
 				if (!pkgId.equals("")) {
@@ -203,11 +209,18 @@ public class DomainService implements IDomainService {
 					nes.setStatus(ExpressSheet.STATUS.STATUS_DISPATCHED);
 					expressSheetDao.save(nes);
 					DistributeCenter pkg_add = new DistributeCenter();
-					// 为什么在新建运单的过程中，直接将快件放入user的揽收包裹中？
-					// 可是下面还有一个方法是专门用来揽收快件的？
 					pkg_add.setPackageid(pkgId);
 					pkg_add.setExpressSheetID(id);
 					distributeCenterDao.save(pkg_add);
+					SimpleDateFormat sdf = new SimpleDateFormat(
+							"yyyy-MM-dd'T'HH:mm:ss");
+					Date tm = new Date();
+					try {
+						tm = sdf.parse(sdf.format(new Date().getTime()));
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					transHistoryDao.addDisEsHis(pkgId, uid, tm);
 					return Response.ok(nes)
 							.header("EntityClass", "D_ExpressSheet").build();
 				} else {
@@ -228,11 +241,22 @@ public class DomainService implements IDomainService {
 	public Response DeliveryExpressSheetId(String id, int uid) {
 		try {
 			ExpressSheet nes = expressSheetDao.get(id);
-			// nes.setDeliver(String.valueOf(uid));
-			nes.setDelivetime(new Date());
+			nes.setDeliver(String.valueOf(uid));
+			User duser = userDao.get(uid);
+			String dpkgid = duser.getDeliverpid();
+			// 产生一个不带毫秒的时间,不然,SQL时间和JAVA时间格式不一致
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+			Date tm = new Date();
+			try {
+				tm = sdf.parse(sdf.format(new Date().getTime()));
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+			nes.setDelivetime(tm);
+			transHistoryDao.addDlvHis(dpkgid, uid, tm);
 			nes.setStatus(ExpressSheet.STATUS.STATUS_DELIVERIED);
 			expressSheetDao.save(nes);
-			return Response.ok(nes).header("EntityClass", "ExpressSheet")
+			return Response.ok(nes).header("EntityClass", "DLV_ExpressSheet")
 					.build();
 		} catch (Exception e) {
 			return Response.serverError().entity(e.getMessage()).build();
@@ -264,23 +288,16 @@ public class DomainService implements IDomainService {
 
 	// 新建包裹
 	@Override
-	public Response newTransPackage(String id) {
+	public Response newTransPackage(String id, int uid) {
 
 		// 产生一个不带毫秒的时间,不然,SQL时间和JAVA时间格式不一致
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		Date tm = new Date();
-		try {
-			tm = sdf.parse(sdf.format(new Date()));
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
+
 		Package pk = null;
 		try {
 			pk = packageDao.get(id);
 			System.out.println("Domain Service:pk 获取失败" + pk.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
-
 		}
 		if (pk != null) {
 			return Response.ok(pk).header("EntityClass", "E_Package").build();
@@ -288,7 +305,7 @@ public class DomainService implements IDomainService {
 		try {
 			Package npk = new Package();
 			npk.setId(id);
-			npk.setCreatetime(tm);
+			npk.setUid(uid);
 			npk.setStatus(Package.STATUS.STATUS_CREATED);
 			System.out.println("before save package!");
 			packageDao.save(npk);
@@ -309,42 +326,43 @@ public class DomainService implements IDomainService {
 		}
 	}
 
-	// 根据包裹ID拆包，放入转运包裹？
+	// 根据包裹ID拆包，放入转运包裹
 	@Override
-	public List<ExpressSheet> UnpackExpressListInPackage(String packageId,
-			int uid) {
+	public Response UnpackExpressListInPackage(String packageId, int uid) {
 		List<ExpressSheet> list = new ArrayList<ExpressSheet>();
-		// 获取要拆包的包裹的快件列表
-		list = expressSheetDao.getListInPackage(packageId);
-		if (list.size() > 0) {
-			System.out.println("// 将拆包包裹和快件解除关系" + list);
-			// distributeCenterDao.unPack(packageId);
+		Package pkg = packageDao.get(packageId);
+		if (pkg.getStatus() != Package.STATUS.STATUS_PARTATION) {
+			pkg.setStatus(Package.STATUS.STATUS_PARTATION);
+			list = expressSheetDao.getListInPackage(packageId);
 			User user = userDao.get(uid);
 			String transPid = user.getTranspid();
-			System.out.println("// 将拆开快件加入管理员的Transpid中，并将快件状态改为“分拣”");
 			for (ExpressSheet es : list) {
 				DistributeCenter pkg_add = new DistributeCenter();
+				// 添加包裹和快件的联系
 				pkg_add.setExpressSheetID(es.getId());
 				pkg_add.setPackageid(transPid);
+				// 将要拆包的包裹内的快件状态改为“分拣”
 				es.setStatus(ExpressSheet.STATUS.STATUS_PARTATION);
 				distributeCenterDao.save(pkg_add);
 				expressSheetDao.save(es);
 			}
+			// 加入拆包历史
+			transHistoryDao.addPkgHis(packageId, uid);
+			// transHistoryDao.addPkgHis(user.getTranspid(), uid);
+			return Response.ok(pkg).header("EntityClass", "UNP_Package")
+					.build();
 		} else {
-			System.out.println("此包裹内没有快件！");
+			return Response.ok(pkg).header("EntityClass", "NULL_Package")
+					.build();
 		}
-
-		return list;
 	}
 
 	@Override
 	public Response AddExpressSheet(String id, String pid, int uid) {
-		// TODO Auto-generated method stub
 		DistributeCenter pkg_add = new DistributeCenter();
 		ExpressSheet es = expressSheetDao.get(id);
-		// distributeCenterDao.unPackbyEsId(id);
-		System.out.println("***拆除转运包裹成功***");
 		if (es != null) {
+			es.setStatus(ExpressSheet.STATUS.STATUS_TRANSPORT);
 			pkg_add.setExpressSheetID(id);
 			pkg_add.setPackageid(pid);
 			distributeCenterDao.save(pkg_add);
@@ -355,5 +373,43 @@ public class DomainService implements IDomainService {
 			return Response.ok(es).header("EntityClass", "NAD_ExpressSheet")
 					.build();
 		}
+	}
+
+	@Override
+	public Response packTransPackage(String id, int uid) {
+		Package p = packageDao.get(id);
+		p.setStatus(Package.STATUS.STATUS_PACKED);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		Date tm = new Date();
+		try {
+			tm = sdf.parse(sdf.format(new Date().getTime()));
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		p.setCreatetime(tm);
+		transHistoryDao.addPkgHis(id, uid);
+		packageDao.save(p);
+		return Response.ok(p).header("EntityClass", "P_Package").build();
+	}
+
+	@Override
+	public List<TransHistory> getTransHistoryList(String eid) {
+		List<TransHistory> list_his = transHistoryDao
+				.getTransHistoryListByEid(eid);
+		return list_his;
+	}
+
+	@Override
+	public List<Package> getPackageListByUid(int uid) {
+		return packageDao.getPackageListByUid(uid);
+	}
+
+	@Override
+	public Response receivePackageByUid(String id, int uid) {
+		Package p = packageDao.get(id);
+		p.setStatus(Package.STATUS.STATUS_TRANSPORT);
+		transHistoryDao.addPkgHis(id, uid);
+		packageDao.save(p);
+		return Response.ok(p).header("EntityClass", "RCV_Package").build();
 	}
 }
